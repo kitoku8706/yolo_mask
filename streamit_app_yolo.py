@@ -85,15 +85,43 @@ if mode == "이미지":
 # ---------------------------
 # 2) 웹캠(브라우저)
 # ---------------------------
+# elif mode == "웹캠(브라우저)":
+#     st.info("브라우저 카메라를 사용합니다. 접근 권한을 허용해주세요.")
+#     # 현재 슬라이더 값을 transformer에 전달하기 위해 factory로 주입
+#     webrtc_streamer(
+#         key="yolo-webrtc",
+#         mode=WebRtcMode.SENDRECV,
+#         media_stream_constraints={"video": True, "audio": False},
+#         video_transformer_factory=lambda: YoloTransformer(conf=conf, imgsz=imgsz),
+#     )
 elif mode == "웹캠(브라우저)":
     st.info("브라우저 카메라를 사용합니다. 접근 권한을 허용해주세요.")
-    # 현재 슬라이더 값을 transformer에 전달하기 위해 factory로 주입
-    webrtc_streamer(
-        key="yolo-webrtc",
-        mode=WebRtcMode.SENDRECV,
-        media_stream_constraints={"video": True, "audio": False},
-        video_transformer_factory=lambda: YoloTransformer(conf=conf, imgsz=imgsz),
-    )
+    tab1, tab2 = st.tabs(["📷 사진 촬영", "🎥 실시간 스트리밍"])
+
+    # ---- 사진 캡처 모드 ----
+    with tab1:
+        camera_image = st.camera_input("사진을 촬영하세요")
+
+        if camera_image is not None:
+            # 이미지 디코딩 및 RGB 변환
+            file_bytes = np.asarray(bytearray(camera_image.read()), dtype=np.uint8)
+            image_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+            image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+
+            st.image(image_rgb, caption="촬영된 이미지", use_container_width=True)
+            st.subheader("탐지 결과")
+
+            result_rgb = detect_image(image_rgb, conf=conf, imgsz=imgsz)
+            st.image(result_rgb, caption="탐지된 이미지", use_container_width=True)
+
+    # ---- 실시간 스트리밍 모드 ----
+    with tab2:
+        st.warning("실시간 웹캠 스트리밍 모드입니다. 성능은 브라우저/시스템 환경에 따라 다를 수 있습니다.")
+        webrtc_streamer(
+            key="yolo-webrtc",
+            mode=WebRtcMode.SENDRECV,
+            media_stream_constraints={"video
+
 
 # ---------------------------
 # 3) 동영상
@@ -129,3 +157,4 @@ elif mode == "동영상":
 
         cap.release()
         st.success("처리가 완료되었습니다.")
+
