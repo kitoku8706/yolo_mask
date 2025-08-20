@@ -116,12 +116,12 @@ elif mode == "웹캠(브라우저)":
 
     # ---- 실시간 스트리밍 모드 ----
         with tab2:
-        st.warning("실시간 웹캠 스트리밍 모드입니다. 성능은 브라우저/시스템 환경에 따라 다를 수 있습니다.")
-        webrtc_streamer(
-            key="yolo-webrtc",
-            mode=WebRtcMode.SENDRECV,
-            media_stream_constraints={"video": True, "audio": False},
-            video_transformer_factory=lambda: YoloTransformer(conf=conf, imgsz=imgsz),
+            st.warning("실시간 웹캠 스트리밍 모드입니다. 성능은 브라우저/시스템 환경에 따라 다를 수 있습니다.")
+            webrtc_streamer(
+                key="yolo-webrtc",
+                mode=WebRtcMode.SENDRECV,
+                media_stream_constraints={"video": True, "audio": False},
+                video_transformer_factory=lambda: YoloTransformer(conf=conf, imgsz=imgsz),
         )
 
 # ---------------------------
@@ -158,5 +158,6 @@ elif mode == "동영상":
 
         cap.release()
         st.success("처리가 완료되었습니다.")
+
 
 
